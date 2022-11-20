@@ -1,0 +1,29 @@
+.navbar {
+	/* From https://css.glass */
+	background: rgba(255, 255, 255, 0.21);
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(11.5px);
+	-webkit-backdrop-filter: blur(11.5px);
+}
+
+.navbarBrand {
+	width: 5.2rem;
+	position: unset !important;
+}
+
+.navbarBrandImage {
+	object-fit: contain;
+	width: 100% !important;
+	position: relative !important;
+	height: unset !important;
+}
+
+.activeNavlink {
+	color: #6366f1;
+}
+
+@media screen and (max-width: 768px) {
+	.navbarBrand {
+		width: 3.5rem;
+	}
+}

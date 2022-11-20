@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* light mode themes */
+:root {
+  --primary-color: #fff;
+  --secondary-color: #171717;
+}
+
+/* dark mode themes */
+.dark-theme {
+  --primary-color: #171717;
+  --secondary-color: #fff;
+}
+
+body {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
