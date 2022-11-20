@@ -42,7 +42,7 @@ const Navbar = () => {
 
 	return (
 		<>
-			<nav className={ `${navStyles.navbar} flex flex-col md:flex-row justify-between items-center px-2 py-3 md:p-5 shadow-md md:space-x-5 sticky top-0 ease-in-out duration-1000` } ref={ navRef }>
+			<nav className={ `${navStyles.navbar} flex flex-col md:flex-row justify-between items-center px-2 py-3 md:p-2 shadow-md md:space-x-5 sticky top-0 ease-in-out duration-1000` } ref={ navRef }>
 				<div className={ `${navStyles.navbarBrand}` }>
 					<Image
 						className={ navStyles.navbarBrandImage }
