@@ -1,0 +1,17 @@
+.footerBrand {
+	position: unset !important;
+	margin: auto;
+	width: 3rem;
+}
+
+.footerBrandImage {
+	object-fit: contain;
+	width: 100% !important;
+	position: relative !important;
+}
+
+@media screen and (max-width: 768px) {
+	.footerBrand {
+		width: 2.5rem;
+	}
+}

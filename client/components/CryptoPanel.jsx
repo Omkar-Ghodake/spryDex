@@ -2,13 +2,15 @@ import React, { useContext, useEffect } from 'react'
 import Link from 'next/link'
 import CryptoCard from '../layouts/CryptoCard'
 import { CurrenciesContext } from '../context/CurrenciesState'
+import { FiatCurrencyContext } from '../context/FiatCurrencyState'
 
 const CryptoPanel = () => {
 	const { currencies, fetchCurrencies } = useContext(CurrenciesContext)
+	const { fiatCurrency } = useContext(FiatCurrencyContext)
 
 	useEffect(() => {
-		fetchCurrencies('INR', 10, 1)
-	}, [])
+		fetchCurrencies(fiatCurrency, 10, 1)
+	}, [fiatCurrency])
 
 	return (
 		<>
@@ -30,9 +32,11 @@ const CryptoPanel = () => {
 
 				</div>
 
-				<Link href={ '/news' }>
-					<button className='flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg my-4'>See More Crypto</button>
-				</Link>
+				<div className='flex justify-center items-center'>
+					<Link href={ '/cryptos' }>
+						<button className='flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg my-4'>See More Crypto</button>
+					</Link>
+				</div>
 			</section>
 		</>
 	)

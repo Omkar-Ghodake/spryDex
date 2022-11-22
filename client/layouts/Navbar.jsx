@@ -4,15 +4,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { BsSunFill, BsMoonFill } from 'react-icons/bs'
 import { RiMenu4Fill } from 'react-icons/ri'
-import { ThemeContext } from '../context/ThemeState'
 import navStyles from '../styles/Navbar.module.css'
+import { ThemeContext } from '../context/ThemeState'
+import { FiatCurrencyContext } from '../context/FiatCurrencyState'
+import { FiatCurrencySymContext } from '../context/FiatCurrencySymState'
 
 const Navbar = () => {
-	const { theme, updateTheme } = useContext(ThemeContext)
 
 	const router = useRouter()
 
 	const navRef = useRef()
+
+	const { theme, updateTheme } = useContext(ThemeContext)
+	const { setFiatCurrency } = useContext(FiatCurrencyContext)
+	const { setFiatCurrencySym } = useContext(FiatCurrencySymContext)
 
 	const [navCollapsed, setNavCollapsed] = useState(true)
 
@@ -25,6 +30,10 @@ const Navbar = () => {
 		navCollapsed
 			? setNavCollapsed(false)
 			: setNavCollapsed(true)
+	}
+
+	const changeFiatCurrency = (newFiatCurrency) => {
+		setFiatCurrency(newFiatCurrency)
 	}
 
 	useEffect(() => {
@@ -42,10 +51,10 @@ const Navbar = () => {
 
 	return (
 		<>
-			<nav className={ `${navStyles.navbar} flex flex-col md:flex-row justify-between items-center px-2 py-3 md:p-2 shadow-md md:space-x-5 sticky top-0 ease-in-out duration-1000` } ref={ navRef }>
+			<nav className={ `${navStyles.navbar} flex flex-col md:flex-row justify-between items-center px-2 py-3 md:p-2 shadow-md md:space-x-5 sticky top-0 ease-in-out duration-1000 z-50` } ref={ navRef }>
 				<div className={ `${navStyles.navbarBrand}` }>
 					<Image
-						className={ navStyles.navbarBrandImage }
+						className={ `${navStyles.navbarBrandImage} mx-0` }
 						src={ theme === 'light' ? '/spryDEX-black.png' : '/spryDEX-white.png' }
 						alt='spryDex'
 						fill
@@ -58,6 +67,9 @@ const Navbar = () => {
 					<ul className="nav-list flex flex-col md:flex-row justify-start md:space-x-10 space-y-3 md:space-y-0 text-lg md:text-xl mb-2 mt-5 md:mb-0 md:mt-0">
 						<Link href={ '/' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
 							<li className={ `list-item text-center ${router.pathname === '/' && navStyles.activeNavlink}` }>Home</li>
+						</Link>
+						<Link href={ '/cryptos' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
+							<li className={ `list-item text-center ${router.pathname === '/cryptos' && navStyles.activeNavlink}` }>Cryptos</li>
 						</Link>
 						<Link href={ '/news' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
 							<li className={ `list-item text-center ${router.pathname === '/news' && navStyles.activeNavlink}` }>News</li>
@@ -82,7 +94,14 @@ const Navbar = () => {
 						</div>
 
 						<div className="m-0">
-							Change Currency
+							<label htmlFor="cars" className='hidden'>Choose Currency</label>
+							<select name="cars" id="cars" className='outline-none px-2 py-1 rounded-md' onChange={ (e) => { changeFiatCurrency(e.target.value) } }>
+								<option value="IN" defaultValue>INR</option>
+								<option value="USD">USD</option>
+								<option value="EUR">EUR</option>
+								{/* <option value="YEN">YEN</option> */ }
+							</select>
+							{/* <AiFillCaretDown /> */ }
 						</div>
 					</div>
 				</div>
