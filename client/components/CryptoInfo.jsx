@@ -1,12 +1,15 @@
 import React, { useContext, useEffect } from 'react'
 import CryptoTable from '../layouts/CryptoTable'
 import { CurrenciesContext } from '../context/CurrenciesState'
+import { FiatCurrencyContext } from '../context/FiatCurrencyState'
 
 const CryptoInfo = () => {
 	const { currencies, fetchCurrencies } = useContext(CurrenciesContext)
 
+	const { fiatCurrency } = useContext(FiatCurrencyContext)
+
 	useEffect(() => {
-		fetchCurrencies('INR', 20, 1)
+		fetchCurrencies(fiatCurrency, 20, 1)
 	}, [])
 
 	return (
