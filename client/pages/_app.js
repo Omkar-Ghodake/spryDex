@@ -9,6 +9,7 @@ import Navbar from '../layouts/Navbar'
 import '../styles/globals.css'
 import { Toaster } from 'react-hot-toast';
 import LoadingBar from 'react-top-loading-bar'
+import { CryptoSlugState } from '../context/CryptoSlugState'
 
 function MyApp({ Component, pageProps }) {
   const [loadingProgress, setLoadingProgress] = useState(0)
@@ -17,20 +18,22 @@ function MyApp({ Component, pageProps }) {
     <FiatCurrencyState>
       <FiatCurrencySymState>
         <NewsState setLoadingProgress={ setLoadingProgress }>
-          <CurrenciesState setLoadingProgress={ setLoadingProgress }>
-            <ThemeState>
-              <Toaster />
-              <LoadingBar
-                progress={ loadingProgress }
-                color='#6366f1'
-                height={ 3 }
-              />
-              <Navbar />
-              <Component { ...pageProps } />
-              <hr className='mb-10' />
-              <Footer />
-            </ThemeState>
-          </CurrenciesState>
+          <CryptoSlugState setLoadingProgress={ setLoadingProgress }>
+            <CurrenciesState setLoadingProgress={ setLoadingProgress }>
+              <ThemeState>
+                <Toaster />
+                <LoadingBar
+                  progress={ loadingProgress }
+                  color='#6366f1'
+                  height={ 3 }
+                />
+                <Navbar />
+                <Component { ...pageProps } />
+                <div className='bg-indigo-500 h-[1px] mb-10'></div>
+                <Footer />
+              </ThemeState>
+            </CurrenciesState>
+          </CryptoSlugState>
         </NewsState>
       </FiatCurrencySymState>
     </FiatCurrencyState>

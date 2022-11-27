@@ -1,16 +1,19 @@
 import React, { useContext, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import CryptoTable from '../layouts/CryptoTable'
 import { CurrenciesContext } from '../context/CurrenciesState'
 import { FiatCurrencyContext } from '../context/FiatCurrencyState'
 
 const CryptoInfo = () => {
+	const router = useRouter()
+
 	const { currencies, fetchCurrencies } = useContext(CurrenciesContext)
 
 	const { fiatCurrency } = useContext(FiatCurrencyContext)
 
 	useEffect(() => {
 		fetchCurrencies(fiatCurrency, 20, 1)
-	}, [])
+	}, [fiatCurrency, router.pathname])
 
 	return (
 		<>
@@ -58,8 +61,11 @@ const CryptoInfo = () => {
 										return (
 											<CryptoTable
 												key={ index }
+												id={ currency.id }
 												rank={ currency.market_cap_rank }
 												name={ currency.name }
+												sym={ currency.symbol }
+												img={ currency.image }
 												price={ currency.current_price }
 												change24h={ currency.price_change_percentage_24h }
 												marketCap24h={ currency.market_cap_change_percentage_24h }

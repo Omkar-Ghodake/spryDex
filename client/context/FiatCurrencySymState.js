@@ -6,15 +6,15 @@ const FiatCurrencySymContext = createContext()
 const FiatCurrencySymState = (props) => {
 	const { fiatCurrency } = useContext(FiatCurrencyContext)
 
-	const [fiatCurrencySym, setFiatCurrencySym] = useState('INR')
+	const [fiatCurrencySym, setFiatCurrencySym] = useState({ sym: '₹', countryCode: 'en-IN' })
 
 	const changeFiatCurrencySym = () => {
 		if (fiatCurrency === 'INR') {
-			setFiatCurrencySym('₹')
+			setFiatCurrencySym({ sym: '₹', countryCode: 'en-IN' })
 		} else if (fiatCurrency === 'USD') {
-			setFiatCurrencySym('$')
+			setFiatCurrencySym({ sym: '$', countryCode: 'en-US' })
 		} else if (fiatCurrency === 'EUR') {
-			setFiatCurrencySym('€')
+			setFiatCurrencySym({ sym: '€', countryCode: 'en-EU' })
 		}
 	}
 

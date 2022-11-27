@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
+import Link from 'next/link'
 import { AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai'
 import { FiatCurrencySymContext } from '../context/FiatCurrencySymState'
 
 const CryptoTable = (props) => {
-	const { rank, name, price, change24h, marketCap24h, totalMarketCap, circulatingSupply, totalVolume, ath, atl } = props
+	const { rank, id, name, sym, img, price, change24h, marketCap24h, totalMarketCap, circulatingSupply, totalVolume, ath, atl } = props
 
 	const { fiatCurrencySym } = useContext(FiatCurrencySymContext)
 
@@ -13,11 +14,14 @@ const CryptoTable = (props) => {
 				<td className="px-6 py-4 whitespace-nowrap text-base font-medium text-gray-900">
 					#{ rank }
 				</td>
-				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap">
-					{ name }
-				</td>
+				<Link href={ `/cryptocurrency/${id}` }>
+					<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap flex items-center hover:text-indigo-500 hover:underline">
+						<img src={ img } alt={ sym } className='w-8 mr-2' />
+						<span>{ name }</span>
+					</td>
+				</Link>
 				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
-					{ fiatCurrencySym } { price.toLocaleString('EN-IN') }
+					{ fiatCurrencySym.sym } { price.toLocaleString(fiatCurrencySym.countryCode) }
 				</td>
 				<td className={ `${change24h < 0 ? 'text-red-600' : 'text-green-600'} text-base text-gray-900  px-6 py-4 whitespace-nowrap text-right` }>
 					<span className='flex justify-center items-center'>
@@ -32,19 +36,19 @@ const CryptoTable = (props) => {
 					</span>
 				</td>
 				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
-					{ fiatCurrencySym } { totalMarketCap.toLocaleString('EN-IN') }
+					{ fiatCurrencySym.sym } { totalMarketCap.toLocaleString(fiatCurrencySym.countryCode) }
 				</td>
 				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
-					{ fiatCurrencySym } { circulatingSupply.toLocaleString('EN-IN') }
+					{ fiatCurrencySym.sym } { circulatingSupply.toLocaleString(fiatCurrencySym.countryCode) }
 				</td>
 				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
-					{ fiatCurrencySym } { totalVolume.toLocaleString('EN-IN') }
+					{ fiatCurrencySym.sym } { totalVolume.toLocaleString(fiatCurrencySym.countryCode) }
 				</td>
 				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
-					{ fiatCurrencySym } { ath.toLocaleString('EN-IN') }
+					{ fiatCurrencySym.sym } { ath.toLocaleString(fiatCurrencySym.countryCode) }
 				</td>
 				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
-					{ fiatCurrencySym } { atl.toLocaleString('EN-IN') }
+					{ fiatCurrencySym.sym } { atl.toLocaleString(fiatCurrencySym.countryCode) }
 				</td>
 			</tr>
 		</>

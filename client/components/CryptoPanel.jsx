@@ -1,16 +1,19 @@
 import React, { useContext, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import CryptoCard from '../layouts/CryptoCard'
 import { CurrenciesContext } from '../context/CurrenciesState'
 import { FiatCurrencyContext } from '../context/FiatCurrencyState'
 
 const CryptoPanel = () => {
+	const router = useRouter()
+
 	const { currencies, fetchCurrencies } = useContext(CurrenciesContext)
 	const { fiatCurrency } = useContext(FiatCurrencyContext)
 
 	useEffect(() => {
 		fetchCurrencies(fiatCurrency, 10, 1)
-	}, [fiatCurrency])
+	}, [fiatCurrency, router.pathname])
 
 	return (
 		<>
@@ -21,6 +24,7 @@ const CryptoPanel = () => {
 							return (
 								<CryptoCard
 									key={ index }
+									id={ currency.id }
 									img={ currency.image }
 									name={ currency.name }
 									sym={ currency.symbol }

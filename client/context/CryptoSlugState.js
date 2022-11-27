@@ -1,14 +1,14 @@
 import { createContext, useState } from "react";
 import swal from 'sweetalert'
 
-const CurrenciesContext = createContext()
+const CryptoSlugContext = createContext()
 
-const CurrenciesState = (props) => {
+const CryptoSlugState = (props) => {
 	const { setLoadingProgress } = props
 
-	const [currencies, setCurrencies] = useState([])
+	const [cryptoObj, setCryptoObj] = useState({})
 
-	const fetchCurrencies = async (currency, perPage, page) => {
+	const fetchCryptoObj = async (crypto, currency, perPage, page) => {
 		try {
 			setLoadingProgress(20)
 
@@ -25,11 +25,9 @@ const CurrenciesState = (props) => {
 			setLoadingProgress(80)
 
 			if (parsedData.error) {
-
-			}
-			// setCurrencies(parsedData.find(item => item.id === crypto))
-			else {
-				setCurrencies(parsedData)
+				throw parsedData.error
+			} else {
+				setCryptoObj(parsedData.find(item => item.id === crypto))
 			}
 
 			setLoadingProgress(100)
@@ -45,13 +43,13 @@ const CurrenciesState = (props) => {
 	}
 
 	return (
-		<CurrenciesContext.Provider value={ { currencies, fetchCurrencies } }>
+		<CryptoSlugContext.Provider value={ { cryptoObj, fetchCryptoObj } }>
 			{ props.children }
-		</CurrenciesContext.Provider>
+		</CryptoSlugContext.Provider>
 	)
 }
 
 export {
-	CurrenciesContext,
-	CurrenciesState
+	CryptoSlugState,
+	CryptoSlugContext
 }
