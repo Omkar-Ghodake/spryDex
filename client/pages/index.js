@@ -16,6 +16,7 @@ export default function Home() {
   const { data: session } = useSession()
 
   useEffect(() => {
+    // console.log(session)
     if (!signedIn && session) {
       toast
         .success(

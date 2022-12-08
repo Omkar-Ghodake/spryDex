@@ -37,7 +37,7 @@ const Navbar = () => {
 			: setAccountDropdown(true)
 	}
 
-	// google login session
+	// google signin session
 	const { data: session } = useSession()
 
 	const googleSignoutHandler = async () => {
@@ -99,17 +99,17 @@ const Navbar = () => {
 
 					<div className="nav-utils md:space-x-3 space-y-3 md:space-y-0 flex flex-col md:flex-row justify-between md:justify-center items-center">
 						<ul className="nav-list flex flex-col md:flex-row justify-start md:space-x-10 space-y-3 md:space-y-0 text-lg md:text-xl mb-2 mt-5 md:mb-0 md:mt-0">
-							{/* not logged in sessions */ }
+							{/* not signged in sessions */ }
 							{ !session && <>
-								<Link href={ '/login' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
-									<li className={ `list-item text-center ${router.pathname === '/login' && navStyles.activeNavlink}` }>Log In</li>
+								<Link href={ '/signin' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
+									<li className={ `list-item text-center ${router.pathname === '/signin' && navStyles.activeNavlink}` }>Sign In</li>
 								</Link>
 								<Link href={ '/signup' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
 									<li className={ `list-item text-center ${router.pathname === '/signup' && navStyles.activeNavlink}` }>Sign Up</li>
 								</Link>
 							</> }
 
-							{/* logged in sessions */ }
+							{/* signged in sessions */ }
 							{
 								session && <>
 									<li className={ `list-item text-center` }>

@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FcGoogle } from 'react-icons/fc'
-import { BsFacebook, BsKeyFill } from 'react-icons/bs'
+import { BsFacebook, BsGithub, BsLinkedin, BsKeyFill } from 'react-icons/bs'
 import { BiLogInCircle } from 'react-icons/bi'
 import { IoCreateOutline } from 'react-icons/io5'
 import { RiAccountCircleFill, RiText } from 'react-icons/ri'
@@ -30,8 +30,13 @@ const signup = () => {
 		console.log(parsedRes)
 	}
 
-	const googleSignInHandler = async () => {
-		await signIn('google', { callbackUrl: 'http://localhost:3000' })
+	const signInHandler = async (provider) => {
+		try {
+			await signIn(provider, { callbackUrl: 'http://localhost:3000' })
+		} catch (error) {
+			console.log(error)
+			router.push('/signin')
+		}
 	}
 
 	// google login session
@@ -110,11 +115,17 @@ const signup = () => {
 							<span>Sign In With</span>
 
 							<div className='flex space-x-5 justify-center text-4xl mt-1'>
-								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ googleSignInHandler }>
+								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { signInHandler('google') } }>
 									<FcGoogle className='cursor-pointer' />
 								</button>
-								<button className='hover:bg-slate-100 rounded-full p-2 duration-100'>
+								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { signInHandler('facebook') } }>
 									<BsFacebook className='cursor-pointer text-facebook' />
+								</button>
+								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { signInHandler('github') } }>
+									<BsGithub className='cursor-pointer' />
+								</button>
+								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { signInHandler('linkedin') } }>
+									<BsLinkedin className='cursor-pointer text-linkedin' />
 								</button>
 							</div>
 						</div>
@@ -125,9 +136,9 @@ const signup = () => {
 							<span>Already Have an Account?</span>
 						</div>
 
-						<Link href={ '/login' }>
+						<Link href={ '/signin' }>
 							<button className='flex items-center space-x-3 mx-auto text-white bg-indigo-500 border-0 py-2 px-10 focus:outline-none hover:bg-indigo-600 rounded text-lg my-4'>
-								<span>Log In</span>
+								<span>Sign In</span>
 								<span><BiLogInCircle /></span>
 							</button>
 						</Link>
