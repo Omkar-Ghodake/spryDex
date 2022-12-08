@@ -12,8 +12,8 @@ const NewsPanel = () => {
 
 	return (
 		<>
-			<section className="text-gray-600 body-font">
-				<div className="container py-16 md:py-24 mx-auto">
+			<section className="text-gray-600 body-font py-8">
+				<div className="container mx-auto">
 					<div className="flex flex-col">
 						<h1 className="text-gray-900 font-medium text-5xl mb-4  mx-auto">NEWS</h1>
 					</div>

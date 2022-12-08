@@ -6,7 +6,11 @@ module.exports = {
     "./layouts/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "facebook": "#4267B2"
+      }
+    },
   },
   plugins: [],
   important: true

@@ -14,12 +14,12 @@ const CryptoTable = (props) => {
 				<td className="px-6 py-4 whitespace-nowrap text-base font-medium text-gray-900">
 					#{ rank }
 				</td>
-				<Link href={ `/cryptocurrency/${id}` }>
-					<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap flex items-center hover:text-indigo-500 hover:underline">
-						<img src={ img } alt={ sym } className='w-8 mr-2' />
+				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap flex items-center">
+					<img src={ img } alt={ sym } className='w-8 mr-2' />
+					<Link href={ `/cryptocurrency/${id}` } className='hover:text-indigo-500 hover:underline'>
 						<span>{ name }</span>
-					</td>
-				</Link>
+					</Link>
+				</td>
 				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
 					{ fiatCurrencySym.sym } { price.toLocaleString(fiatCurrencySym.countryCode) }
 				</td>
@@ -43,12 +43,6 @@ const CryptoTable = (props) => {
 				</td>
 				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
 					{ fiatCurrencySym.sym } { totalVolume.toLocaleString(fiatCurrencySym.countryCode) }
-				</td>
-				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
-					{ fiatCurrencySym.sym } { ath.toLocaleString(fiatCurrencySym.countryCode) }
-				</td>
-				<td className="text-base text-gray-900 px-6 py-4 whitespace-nowrap text-right">
-					{ fiatCurrencySym.sym } { atl.toLocaleString(fiatCurrencySym.countryCode) }
 				</td>
 			</tr>
 		</>

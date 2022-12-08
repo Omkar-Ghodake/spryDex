@@ -11,7 +11,8 @@
 /* dark mode themes */
 .dark-theme {
   --primary-color: #171717;
-  --secondary-color: #fff;
+  --secondary-color: #f1f5f9;
+  /*slate-100*/
 }
 
 body {

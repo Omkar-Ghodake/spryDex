@@ -1,9 +1,30 @@
 import Head from 'next/head'
+import { useEffect, useContext } from 'react'
 import CryptoPanel from '../components/CryptoPanel'
 import NewsPanel from '../components/NewsPanel'
-import homeStyles from '../styles/Home.module.css'
+import toast from 'react-hot-toast'
+import { ThemeContext } from '../context/ThemeState'
+import { ToastOptionsContext } from '../context/ToastOptionsState'
+import { useSession, getSession } from 'next-auth/react'
+import { SignedInContext } from '../context/SignedInState'
 
 export default function Home() {
+  const { theme } = useContext(ThemeContext)
+  const { toastOptions } = useContext(ToastOptionsContext)
+  const { signedIn, setSignedIn } = useContext(SignedInContext)
+
+  const { data: session } = useSession()
+
+  useEffect(() => {
+    if (!signedIn && session) {
+      toast
+        .success(
+          'Signed In Successfully!',
+          theme === 'light' ? toastOptions.light : toastOptions.dark
+        )
+      setSignedIn(true)
+    }
+  }, [session && session.user])
 
   return (
     <>
@@ -13,8 +34,9 @@ export default function Home() {
         <link rel="icon" href="/favicon-white.png" />
       </Head>
 
-      <div className="container mx-auto py-3">
+      <div className="container mx-auto">
         <CryptoPanel />
+        <hr />
         <NewsPanel />
       </div>
     </>

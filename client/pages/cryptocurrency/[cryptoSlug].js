@@ -20,7 +20,7 @@ const Slug = () => {
 	// const gochi = new Date(cryptoObj.ath_date)
 	// console.log(gochi)
 
-	const fixedNoOfDecimals = 4
+	const fixedNoOfDecimals = 2
 
 	const toggleSub2 = () => {
 		sub2State
@@ -56,7 +56,7 @@ const Slug = () => {
 
 								<div className='flex flex-col mb-5'>
 									<span className='text-slate-700 text-xl lg:text-2xl font-medium'>Price</span>
-									<h2 className='text-4xl tracking-tight md:text-5xl font-medium'>
+									<h2 className='text-4xl tracking-tight font-medium'>
 										{ cryptoObj.current_price ? `${fiatCurrencySym.sym} ${cryptoObj.current_price.toFixed(fixedNoOfDecimals)}` : '- -' }
 									</h2>
 								</div>
@@ -74,8 +74,8 @@ const Slug = () => {
 								</div>
 							</div>
 
-							<div className="sub lg:flex bg-white p-5 pb-0 rounded-lg w-full lg:w-[74%] h-fit lg:h-80">
-								<div className='sub1 flex lg:flex-col flex-wrap justify-between md:justify-start  w-full lg:w-2/5 lg:h-80'>
+							<div className="sub lg:flex bg-white p-5 pb-0 rounded-lg w-full lg:w-[74%] h-fit">
+								<div className='sub1 flex lg:flex-col flex-wrap justify-between md:justify-start w-full lg:w-2/5'>
 									<div className="property-group flex flex-col justify-center mb-5 w-fit md:w-1/3 lg:w-1/3">
 										<div className="property flex items-center text-sm font-medium text-slate-500">
 											<AiFillCaretUp className='mr-1' />
@@ -127,7 +127,7 @@ const Slug = () => {
 									</div>
 								</div>
 
-								<div className={ `sub2 ${!sub2State && 'hidden'} flex md:flex  lg:flex-col flex-wrap justify-between md:justify-start  w-full lg:w-3/5 lg:h-80` }>
+								<div className={ `sub2 ${!sub2State && 'hidden'} flex md:flex  lg:flex-col flex-wrap justify-between md:justify-start  w-full lg:w-3/5` }>
 									<div className="property-group flex flex-col justify-center mb-5 w-fit md:w-1/3 lg:w-1/3">
 										<div className="property flex items-center text-sm font-medium text-slate-500">
 											<span>Market Cap</span>

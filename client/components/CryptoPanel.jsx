@@ -13,11 +13,11 @@ const CryptoPanel = () => {
 
 	useEffect(() => {
 		fetchCurrencies(fiatCurrency, 10, 1)
-	}, [fiatCurrency, router.pathname])
+	}, [fiatCurrency])
 
 	return (
 		<>
-			<section className="text-gray-600 body-font">
+			<section className="text-gray-600 body-font py-8">
 				<div className="flex flex-wrap">
 					{
 						currencies && currencies.map((currency, index) => {

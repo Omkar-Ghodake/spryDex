@@ -2,87 +2,68 @@ import React, { useContext, useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BsSunFill, BsMoonFill } from 'react-icons/bs'
 import { RiMenu4Fill } from 'react-icons/ri'
-import { AiFillCheckCircle } from 'react-icons/ai'
 import navStyles from '../styles/Navbar.module.css'
 import { ThemeContext } from '../context/ThemeState'
-import { FiatCurrencyContext } from '../context/FiatCurrencyState'
+import { useSession, signOut } from 'next-auth/react'
+import { BsChevronDown } from 'react-icons/bs'
 import toast from 'react-hot-toast'
+import { ToastOptionsContext } from '../context/ToastOptionsState'
+import { SignedInContext } from '../context/SignedInState'
 
 const Navbar = () => {
 
 	const router = useRouter()
 
 	const navRef = useRef()
+	const accountDropdownRef = useRef()
 
-	const { theme, updateTheme } = useContext(ThemeContext)
-	const { setFiatCurrency } = useContext(FiatCurrencyContext)
+	const { theme } = useContext(ThemeContext)
+	const { toastOptions } = useContext(ToastOptionsContext)
+	const { setSignedIn } = useContext(SignedInContext)
 
 	const [navCollapsed, setNavCollapsed] = useState(true)
+	const [accountDropdown, setAccountDropdown] = useState(false)
 
-	const handleUpdateTheme = (e) => {
-		e.target.checked
-			? updateTheme('dark')
-			: updateTheme('light')
-
-		e.target.checked
-			? toast
-				.success('Dark Mode On',
-					{
-						style: {
-							backgroundColor: '#000',
-							color: '#fff'
-						},
-						iconTheme: {
-							primary: '#6366f1', secondary: '#fff'
-						}
-					})
-			: toast
-				.success('Dark Mode Off',
-					{
-						style: {
-							backgroundColor: '#fff',
-							color: '#000'
-						},
-						iconTheme: {
-							primary: '#6366f1', secondary: '#fff'
-						}
-					})
-	}
-
-	const handleNavToggle = () => {
+	const navToggleHandler = () => {
 		navCollapsed
 			? setNavCollapsed(false)
 			: setNavCollapsed(true)
 	}
 
-	const changeFiatCurrency = (newFiatCurrency) => {
-		setFiatCurrency(newFiatCurrency)
+	const toggleAccountDropdown = () => {
+		accountDropdown
+			? setAccountDropdown(false)
+			: setAccountDropdown(true)
+	}
 
-		theme === 'light'
-			? toast(<div>Currency Changed to <b>{ newFiatCurrency }</b></div>, {
-				icon: <AiFillCheckCircle className='text-2xl text-indigo-500' />
-			})
-			: toast(<div>Currency Changed to <b>{ newFiatCurrency }</b></div>, {
-				style: {
-					backgroundColor: '#000',
-					color: '#fff'
-				},
-				icon: <AiFillCheckCircle className='text-2xl text-indigo-500' />
-			})
+	// google login session
+	const { data: session } = useSession()
+
+	const googleSignoutHandler = async () => {
+		const data = await signOut({ redirect: false, callbackUrl: '/' })
+		toast
+			.success(
+				'Signed Out Successfully!',
+				theme === 'light' ? toastOptions.light : toastOptions.dark
+			)
+		setSignedIn(false)
+		router.push(data.url)
 	}
 
 	useEffect(() => {
-		const handleClickOutsideNav = (event) => {
-			if (navRef.current && !navRef.current.contains(event.target)) {
+		const handleClickOutsideElement = (e) => {
+			if (navRef.current && !navRef.current.contains(e.target)) {
 				setNavCollapsed(true)
 			}
+			if (accountDropdownRef.current && !accountDropdownRef.current.contains(e.target)) {
+				setAccountDropdown(false)
+			}
 		}
-		document.addEventListener("mousedown", handleClickOutsideNav);
+		document.addEventListener("mousedown", handleClickOutsideElement);
 
 		return () => {
-			document.removeEventListener("mousedown", handleClickOutsideNav);
+			document.removeEventListener("mousedown", handleClickOutsideElement);
 		}
 	}, [])
 
@@ -98,7 +79,7 @@ const Navbar = () => {
 					/>
 				</div>
 
-				<button className='md:hidden text-indigo-500 hover:bg-gray-200 active:bg-gray-200 p-2 rounded text-2xl absolute top-5 right-2 duration-200' onClick={ handleNavToggle }><RiMenu4Fill /></button>
+				<button className='md:hidden text-indigo-500 hover:bg-gray-200 active:bg-gray-200 p-2 rounded text-2xl absolute top-5 right-2 duration-200' onClick={ navToggleHandler }><RiMenu4Fill /></button>
 
 				<div className={ `${navStyles.collapsibleNabar} ${navCollapsed && 'hidden'} md:flex flex-col md:flex-row justify-between items-center mx-auto md:space-x-5 md:space-y-0 space-y-3 w-2/3` }>
 					<ul className="nav-list flex flex-col md:flex-row justify-start md:space-x-10 space-y-3 md:space-y-0 text-lg md:text-xl mb-2 mt-5 md:mb-0 md:mt-0">
@@ -117,29 +98,52 @@ const Navbar = () => {
 					</ul>
 
 					<div className="nav-utils md:space-x-3 space-y-3 md:space-y-0 flex flex-col md:flex-row justify-between md:justify-center items-center">
-						<div className="toggle-theme flex justify-start items-center space-x-2">
-							<span className="flex items-center md:ml-3 text-lg font-medium text-gray-900 dark:text-gray-300">
-								<BsSunFill className='text-indigo-400' />
-							</span>
-							<label className="inline-flex relative items-center cursor-pointer">
-								<input type="checkbox" value={ false } className="sr-only peer" onClick={ (e) => { handleUpdateTheme(e) } } />
-								<div className="w-9 h-5 md:w-11 md:h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-indigo-400 after:content-[''] after:absolute after:top-[2px] after:left-[2px] md:after:left-[2px] after:bg-indigo-500 after:border-indigo-300 after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 after:transition-all dark:border-indigo-600 peer-checked:bg-gray-500"></div>
-							</label>
-							<span className="flex items-center ml-3 text-lg font-medium text-gray-900 dark:text-gray-300">
-								<BsMoonFill className='text-indigo-400' />
-							</span>
-						</div>
+						<ul className="nav-list flex flex-col md:flex-row justify-start md:space-x-10 space-y-3 md:space-y-0 text-lg md:text-xl mb-2 mt-5 md:mb-0 md:mt-0">
+							{/* not logged in sessions */ }
+							{ !session && <>
+								<Link href={ '/login' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
+									<li className={ `list-item text-center ${router.pathname === '/login' && navStyles.activeNavlink}` }>Log In</li>
+								</Link>
+								<Link href={ '/signup' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
+									<li className={ `list-item text-center ${router.pathname === '/signup' && navStyles.activeNavlink}` }>Sign Up</li>
+								</Link>
+							</> }
 
-						<div className="m-0">
-							<label htmlFor="cars" className='hidden'>Choose Currency</label>
-							<select name="cars" id="cars" className='outline-none px-2 py-1 rounded-md' onChange={ (e) => { changeFiatCurrency(e.target.value) } }>
-								<option value="INR" defaultValue>INR</option>
-								<option value="USD">USD</option>
-								<option value="EUR">EUR</option>
-								{/* <option value="YEN">YEN</option> */ }
-							</select>
-							{/* <AiFillCaretDown /> */ }
-						</div>
+							{/* logged in sessions */ }
+							{
+								session && <>
+									<li className={ `list-item text-center` }>
+										<div className="flex items-center space-x-2 cursor-pointer hover:text-indigo-500 duration-100 ease-in" onClick={ toggleAccountDropdown }>
+											<span className="text-4xl">
+												<img src={ session.user.image } alt="" className='w-10 rounded-full' />
+											</span>
+											<span>
+												{ session.user.name }
+											</span>
+											<span>
+												<BsChevronDown />
+											</span>
+										</div>
+
+										{/* Dropdown menu  */ }
+										<div id="dropdown" className={ `${!accountDropdown && 'hidden'} z-10 w-fit bg-white rounded absolute mt-2 border shadow-lg` } ref={ accountDropdownRef }>
+											<ul className="py-1 text-sm text-gray-700 dark:text-gray-200">
+												<li className='px-5 hover:bg-gray-100'>
+													<Link href={ '/userProfile' } className="block py-2 px-4">
+														Profile
+													</Link>
+												</li>
+
+												<li className='px-5 hover:bg-gray-100' onClick={ googleSignoutHandler }>
+													<a href="#" className="block py-2 px-4">Sign out</a>
+												</li>
+											</ul>
+										</div>
+									</li>
+								</>
+							}
+
+						</ul>
 					</div>
 				</div>
 			</nav>
