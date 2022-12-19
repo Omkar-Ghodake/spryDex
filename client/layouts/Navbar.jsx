@@ -1,15 +1,17 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
+import navStyles from '../styles/Navbar.module.css'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
 import { RiMenu4Fill } from 'react-icons/ri'
-import navStyles from '../styles/Navbar.module.css'
-import { ThemeContext } from '../context/ThemeState'
-import { useSession, signOut } from 'next-auth/react'
 import { BsChevronDown } from 'react-icons/bs'
+import { useSession, signOut } from 'next-auth/react'
 import toast from 'react-hot-toast'
+import Cookies from 'js-cookie'
+import { ThemeContext } from '../context/ThemeState'
 import { ToastOptionsContext } from '../context/ToastOptionsState'
 import { SignedInContext } from '../context/SignedInState'
+import { UserContext } from '../context/UserState'
 
 const Navbar = () => {
 
@@ -21,6 +23,7 @@ const Navbar = () => {
 	const { theme } = useContext(ThemeContext)
 	const { toastOptions } = useContext(ToastOptionsContext)
 	const { setSignedIn } = useContext(SignedInContext)
+	const { user, setUser } = useContext(UserContext)
 
 	const [navCollapsed, setNavCollapsed] = useState(true)
 	const [accountDropdown, setAccountDropdown] = useState(false)
@@ -40,15 +43,20 @@ const Navbar = () => {
 	// google signin session
 	const { data: session } = useSession()
 
-	const googleSignoutHandler = async () => {
-		const data = await signOut({ redirect: false, callbackUrl: '/' })
-		toast
-			.success(
-				'Signed Out Successfully!',
-				theme === 'light' ? toastOptions.light : toastOptions.dark
-			)
-		setSignedIn(false)
-		router.push(data.url)
+	const signoutHandler = async () => {
+		if (session) {
+			const data = await signOut({ redirect: false, callbackUrl: '/' })
+			toast
+				.success(
+					'Signed Out Successfully!',
+					theme === 'light' ? toastOptions.light : toastOptions.dark
+				)
+			setSignedIn(false)
+			router.push(data.url)
+		} else if (user) {
+			setUser({})
+			Cookies.remove('token')
+		}
 	}
 
 	useEffect(() => {
@@ -69,7 +77,7 @@ const Navbar = () => {
 
 	return (
 		<>
-			<nav className={ `${navStyles.navbar} flex flex-col md:flex-row justify-between items-center px-2 py-3 md:px-6 md:py-2 shadow-md md:space-x-5 sticky top-0 ease-in-out duration-1000 z-50` } ref={ navRef }>
+			<nav className={ `${navStyles.navbar} blurBg flex flex-col md:flex-row justify-between items-center px-2 py-3 md:px-6 md:py-2 shadow-md md:space-x-5 sticky top-0 ease-in-out duration-1000 z-50` } ref={ navRef }>
 				<div className={ `${navStyles.navbarBrand}` }>
 					<Image
 						className={ `${navStyles.navbarBrandImage} mx-0` }
@@ -100,7 +108,7 @@ const Navbar = () => {
 					<div className="nav-utils md:space-x-3 space-y-3 md:space-y-0 flex flex-col md:flex-row justify-between md:justify-center items-center">
 						<ul className="nav-list flex flex-col md:flex-row justify-start md:space-x-10 space-y-3 md:space-y-0 text-lg md:text-xl mb-2 mt-5 md:mb-0 md:mt-0">
 							{/* not signged in sessions */ }
-							{ !session && <>
+							{ (Object.keys(user).length === 0 && !session) && <>
 								<Link href={ '/signin' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
 									<li className={ `list-item text-center ${router.pathname === '/signin' && navStyles.activeNavlink}` }>Sign In</li>
 								</Link>
@@ -111,19 +119,34 @@ const Navbar = () => {
 
 							{/* signged in sessions */ }
 							{
-								session && <>
+								(Object.keys(user).length !== 0 || session) && <>
 									<li className={ `list-item text-center` }>
-										<div className="flex items-center space-x-2 cursor-pointer hover:text-indigo-500 duration-100 ease-in" onClick={ toggleAccountDropdown }>
-											<span className="text-4xl">
-												<img src={ session.user.image } alt="" className='w-10 rounded-full' />
-											</span>
-											<span>
-												{ session.user.name }
-											</span>
-											<span>
-												<BsChevronDown />
-											</span>
-										</div>
+										{
+											session && <div className="flex items-center space-x-2 cursor-pointer hover:text-indigo-500 duration-100 ease-in" onClick={ toggleAccountDropdown }>
+												<span className="text-4xl">
+													<img src={ session.user.image } alt="" className='w-10 rounded-full' />
+												</span>
+												<span>
+													{ session.user.name }
+												</span>
+												<span>
+													<BsChevronDown />
+												</span>
+											</div>
+										}
+										{
+											Object.keys(user).length !== 0 && <div className="flex items-center space-x-2 cursor-pointer hover:text-indigo-500 duration-100 ease-in" onClick={ toggleAccountDropdown }>
+												<span className="text-4xl">
+													<img src={ user.image } alt="" className='w-10 rounded-full' />
+												</span>
+												<span>
+													{ user.username }
+												</span>
+												<span>
+													<BsChevronDown />
+												</span>
+											</div>
+										}
 
 										{/* Dropdown menu  */ }
 										<div id="dropdown" className={ `${!accountDropdown && 'hidden'} z-10 w-fit bg-white rounded absolute mt-2 border shadow-lg` } ref={ accountDropdownRef }>
@@ -134,7 +157,7 @@ const Navbar = () => {
 													</Link>
 												</li>
 
-												<li className='px-5 hover:bg-gray-100' onClick={ googleSignoutHandler }>
+												<li className='px-5 hover:bg-gray-100' onClick={ signoutHandler }>
 													<a href="#" className="block py-2 px-4">Sign out</a>
 												</li>
 											</ul>

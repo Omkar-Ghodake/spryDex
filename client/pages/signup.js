@@ -1,42 +1,153 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { FcGoogle } from 'react-icons/fc'
 import { BsFacebook, BsGithub, BsLinkedin, BsKeyFill } from 'react-icons/bs'
 import { BiLogInCircle } from 'react-icons/bi'
 import { IoCreateOutline } from 'react-icons/io5'
 import { RiAccountCircleFill, RiText } from 'react-icons/ri'
 import { HiMail } from 'react-icons/hi'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { RiErrorWarningFill } from 'react-icons/ri'
+import { VscEye, VscEyeClosed } from 'react-icons/vsc'
+import { useSession, signIn } from 'next-auth/react'
 import ForbiddenAccess from '../layouts/ForbiddenAccess'
+import toast from 'react-hot-toast'
+import { ThemeContext } from '../context/ThemeState'
+import { ToastOptionsContext } from '../context/ToastOptionsState'
 import swal from 'sweetalert'
+import Spinner from '../layouts/Spinner'
 
 const signup = () => {
+	const router = useRouter()
+
+	const { theme } = useContext(ThemeContext)
+	const { toastOptions } = useContext(ToastOptionsContext)
+
 	const [signupData, setSignupData] = useState({
 		username: '', email: '', password: '', confirmPassword: ''
 	})
+	const [passMatch, setPassMatch] = useState(true)
+	const [passHidden, setPassHidden] = useState(true)
+	const [signingStatus, setSigningStatus] = useState(false)
+	const [errLoc, setErrLoc] = useState()
+	const [errMsg, setErrMsg] = useState()
 
-	const userSignUpHandler = async () => {
+	const userSignUpHandler = async (e) => {
+		e.preventDefault()
+
+		if (signupData.password !== signupData.confirmPassword) {
+			setPassMatch(false)
+			return toast
+				.error(
+					'Password do no match!',
+					theme === 'light' ? toastOptions.light : toastOptions.dark
+				)
+		}
+
+		setSigningStatus(true)
+
+		!passMatch && setPassMatch(true)
 		const response = await fetch('http://localhost:3000/api/userSignup', {
 			method: 'POST',
-			body: JSON.stringify(signupData),
 			headers: {
 				'Content-Type': 'application/json'
-			}
+			},
+			body: JSON.stringify(signupData)
 		})
 
 		const parsedRes = await response.json()
-		console.log(parsedRes)
+
+		setErrLoc(parsedRes.loc)
+
+		setSigningStatus(false)
+
+		parsedRes.success
+			? swal({
+				title: parsedRes.message,
+				text: "",
+				icon: "success",
+				buttons: {
+					ok: "OK",
+					redirect: {
+						text: "Sign In"
+					}
+				}
+			})
+				.then((value) => {
+					switch (value) {
+						case "ok":
+							setSignupData({ username: '', email: '', password: '', confirmPassword: '' })
+							e.target.reset()
+							return theme === 'light'
+								? toast(<div>Sign In to Continue!</div>, {
+									icon: <RiErrorWarningFill className='text-2xl text-amber-400' />
+								})
+								: toast(<div>Sign In to Continue!</div>, {
+									style: {
+										backgroundColor: '#000',
+										color: '#fff'
+									},
+									icon: <RiErrorWarningFill className='text-2xl text-amber-400' />
+								})
+						case "redirect": {
+							setSignupData({ username: '', email: '', password: '', confirmPassword: '' })
+							return router.push('/signin')
+						}
+						default:
+							return swal({
+								title: "Some Error Occured!",
+								text: "",
+								icon: "error",
+							})
+					}
+				})
+			: parsedRes.error
+				? Array.isArray(parsedRes.error)
+					? parsedRes.error.map((err) => {
+						return theme === 'light'
+							? toast(<div>{ err }</div>, {
+								icon: <RiErrorWarningFill className='text-2xl text-amber-400' />
+							})
+							: toast(<div>{ err }</div>, {
+								style: {
+									backgroundColor: '#000',
+									color: '#fff'
+								},
+								icon: <RiErrorWarningFill className='text-2xl text-amber-400' />
+							})
+					})
+					: theme === 'light'
+						? toast(<div>{ parsedRes.error }</div>, {
+							icon: <RiErrorWarningFill className='text-2xl text-amber-400' />
+						})
+						: toast(<div>{ parsedRes.error }</div>, {
+							style: {
+								backgroundColor: '#000',
+								color: '#fff'
+							},
+							icon: <RiErrorWarningFill className='text-2xl text-amber-400' />
+						})
+				: parsedRes.message && setErrMsg(parsedRes.message)
+
+		// if (!parsedRes.success) {
+
+		// }
 	}
 
-	const signInHandler = async (provider) => {
+	const socialSignInHandler = async (provider) => {
 		try {
 			await signIn(provider, { callbackUrl: 'http://localhost:3000' })
 		} catch (error) {
-			console.log(error)
 			router.push('/signin')
 		}
+	}
+
+	const passHiddenHandler = () => {
+		passHidden
+			? setPassHidden(false)
+			: setPassHidden(true)
 	}
 
 	// google login session
@@ -61,51 +172,73 @@ const signup = () => {
 				<link rel="icon" href="/favicon-white.png" />
 			</Head>
 
+			{ signingStatus && <Spinner /> }
+
 			<div className="container mx-auto my-5 p-5">
-				<div className="form bg-white shadow-xl rounded-lg mx-auto md:w-1/2">
+				<div className="bg-white shadow-xl rounded-lg mx-auto md:w-1/2">
 					<div className="head w-full bg-indigo-500 flex justify-center items-center space-x-5 rounded-t-lg px-5 py-2">
 						<Image src={ '/spryDEX-sym-white.png' } height={ '50' } width={ '50' } alt='spryDEX' />
 						<h1 className='text-white text-3xl font-semibold'>spryDEX</h1>
 					</div>
 
-					<div className="body px-5 py-10 lg:w-1/2 mx-auto space-y-5">
-						<div className="flex justify-center items-center space-x-2 text-3xl text-indigo-500 text-center font-medium">
-							<RiAccountCircleFill />
-							<h1 className='text-center text-indigo-500 text-3xl font-medium'>SIGN UP</h1>
-						</div>
+					<div className='space-y-5 py-5'>
+						<form onSubmit={ userSignUpHandler } className='space-y-5'>
+							<div className="body px-5 lg:w-1/2 mx-auto space-y-5">
+								<div className="flex justify-center items-center space-x-2 text-3xl text-indigo-500 text-center font-medium">
+									<RiAccountCircleFill />
+									<h1 className='text-center text-indigo-500 text-3xl font-medium'>SIGN UP</h1>
+								</div>
 
-						<div className="input-group flex items-center space-x-5 border border-gray-300 rounded text-lg bg-white px-2 py-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 duration-200 ease-in-out">
-							<label htmlFor="username" className="input-label">
-								<RiText className='text-lg' />
-							</label>
-							<input type="text" id='username' name='username' className='outline-none' placeholder='Name' onChange={ onChange } />
-						</div>
+								<div className={ `input-group flex items-center space-x-5 border ${errLoc === 'username' ? 'border-red-500' : 'border-gray-300'} rounded text-lg bg-white px-2 py-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 duration-200 ease-in-out` }>
+									<label htmlFor="username" className="input-label">
+										<RiText className='text-lg' />
+									</label>
+									<input type="text" id='username' name='username' className='outline-none' placeholder='Name' onChange={ onChange } required />
+								</div>
+								{ errLoc === 'username' && <span className='text-red-500 text-sm'>{ errMsg }</span> }
 
-						<div className="input-group flex items-center space-x-5 border border-gray-300 rounded text-lg bg-white px-2 py-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 duration-200 ease-in-out">
-							<label htmlFor="email" className="input-label">
-								<HiMail className='text-lg' />
-							</label>
-							<input type="email" id='email' name='email' className='outline-none' placeholder='Email' onChange={ onChange } />
-						</div>
+								<div className="input-group flex items-center space-x-5 border border-gray-300 rounded text-lg bg-white px-2 py-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 duration-200 ease-in-out">
+									<label htmlFor="email" className="input-label">
+										<HiMail className='text-lg' />
+									</label>
+									<input type="email" id='email' name='email' className='outline-none' placeholder='Email' onChange={ onChange } required />
+								</div>
+								{ errLoc === 'email' && <span className='text-red-500 text-sm'>{ errMsg }</span> }
 
-						<div className="input-group flex items-center space-x-5 border border-gray-300 rounded text-lg bg-white px-2 py-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 duration-200 ease-in-out">
-							<label htmlFor="password" className="input-label">
-								<BsKeyFill className='text-lg' />
-							</label>
-							<input type="password" id='password' name='password' className='outline-none' placeholder='Password' onChange={ onChange } />
-						</div>
+								<div className={ `input-group flex items-center space-x-5 border ${!passMatch ? 'border-red-500' : 'border-gray-300'} rounded text-lg bg-white px-2 py-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 duration-200 ease-in-out` }>
+									<label htmlFor="password" className="input-label w-[10%]">
+										<BsKeyFill className='text-lg' />
+									</label>
+									<input type={ `${passHidden ? 'password' : 'text'}` } id='password' name='password' className='outline-none w-[80%]' placeholder='Password' onChange={ onChange } autoComplete='on' />
+									<span className="input-label w-[10%] mx-auto hover:bg-slate-100 rounded-full p-1 cursor-pointer duration-100" onClick={ passHiddenHandler }>
+										{
+											passHidden
+												? <VscEyeClosed className='text-lg mx-auto' />
+												: <VscEye className='text-lg mx-auto' />
+										}
+									</span>
+								</div>
 
-						<div className="input-group flex items-center space-x-5 border border-gray-300 rounded text-lg bg-white px-2 py-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 duration-200 ease-in-out">
-							<label htmlFor="confirmPassword" className="input-label">
-								<BsKeyFill className='text-lg' />
-							</label>
-							<input type="password" id='confirmPassword' name='confirmPassword' className='outline-none' placeholder='Confirm Password' onChange={ onChange } />
-						</div>
+								<div className={ `input-group flex justify-between items-center space-x-5 border border-gray-300 ${!passMatch && 'border-red-500'} rounded text-lg bg-white px-2 py-1 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 duration-200 ease-in-out` }>
+									<label htmlFor="confirmPassword" className="input-label w-[10%]">
+										<BsKeyFill className='text-lg' />
+									</label>
+									<input type={ `${passHidden ? 'password' : 'text'}` } id='confirmPassword' name='confirmPassword' className='outline-none w-[80%]' placeholder='Confirm Password' onChange={ onChange } autoComplete='on' />
+									<span className="input-label w-[10%] mx-auto hover:bg-slate-100 rounded-full p-1 cursor-pointer duration-100" onClick={ passHiddenHandler }>
+										{
+											passHidden
+												? <VscEyeClosed className='text-lg mx-auto' />
+												: <VscEye className='text-lg mx-auto' />
+										}
+									</span>
+								</div>
 
-						<button className='flex items-center space-x-3 mx-auto text-white bg-indigo-500 border-0 py-2 px-10 focus:outline-none hover:bg-indigo-600 rounded text-lg my-4' onClick={ userSignUpHandler }>
-							<span>Sign Up</span>
-							<span><IoCreateOutline /></span>
-						</button>
+								<button className='flex items-center space-x-3 mx-auto text-white bg-indigo-500 border-0 py-2 px-10 focus:outline-none hover:bg-indigo-600 rounded text-lg my-4' role={ 'submit' }>
+									<span>Sign Up</span>
+									<span><IoCreateOutline /></span>
+								</button>
+							</div>
+						</form>
 
 						<div className='text-center'>
 							<span className='text-center text-gray-500'>or</span>
@@ -115,22 +248,22 @@ const signup = () => {
 							<span>Sign In With</span>
 
 							<div className='flex space-x-5 justify-center text-4xl mt-1'>
-								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { signInHandler('google') } }>
-									<FcGoogle className='cursor-pointer' />
+								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { socialSignInHandler('google') } }>
+									<FcGoogle className='rounded-full cursor-pointer' />
 								</button>
-								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { signInHandler('facebook') } }>
-									<BsFacebook className='cursor-pointer text-facebook' />
+								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { socialSignInHandler('facebook') } }>
+									<BsFacebook className='rounded-full cursor-pointer text-facebook' />
 								</button>
-								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { signInHandler('github') } }>
-									<BsGithub className='cursor-pointer' />
+								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { socialSignInHandler('github') } }>
+									<BsGithub className='rounded-full cursor-pointer' />
 								</button>
-								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { signInHandler('linkedin') } }>
-									<BsLinkedin className='cursor-pointer text-linkedin' />
+								<button className='hover:bg-slate-100 rounded-full p-2 duration-100' onClick={ () => { socialSignInHandler('linkedin') } }>
+									<BsLinkedin className='rounded-full cursor-pointer text-linkedin' />
 								</button>
 							</div>
 						</div>
 
-						<hr />
+						<hr className='mx-auto w-[50%]' />
 
 						<div className="text-center">
 							<span>Already Have an Account?</span>

@@ -5,7 +5,7 @@ import NewsPanel from '../components/NewsPanel'
 import toast from 'react-hot-toast'
 import { ThemeContext } from '../context/ThemeState'
 import { ToastOptionsContext } from '../context/ToastOptionsState'
-import { useSession, getSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { SignedInContext } from '../context/SignedInState'
 
 export default function Home() {

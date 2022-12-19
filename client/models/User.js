@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
+const { Schema } = mongoose
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
 	username: {
 		type: String,
 		required: true
@@ -13,10 +14,13 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	role: {
-		type: String,
-		default: 'user'
+	admin: {
+		type: Boolean,
+		default: false
 	}
 }, { timestamps: true })
 
-export default mongoose.model('User', UserSchema)
+// mongoose.models = {}
+// module.exports = mongoose.model('User', UserSchema)
+
+export default mongoose.models.User || mongoose.model('User', UserSchema)

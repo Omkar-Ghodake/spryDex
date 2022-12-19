@@ -12,10 +12,11 @@ import { FiatCurrencySymState } from '../context/FiatCurrencySymState'
 import { NewsState } from '../context/NewsState'
 import { ThemeState } from '../context/ThemeState'
 import { CryptoSlugState } from '../context/CryptoSlugState'
-import { UserInfoState } from '../context/UserInfoState'
 import { ToastOptionsState } from '../context/ToastOptionsState'
 import { MakeToastState } from '../context/MakeToastState'
 import { SignedInState } from '../context/SignedInState'
+import { TopLoaderState } from '../context/TopLoaderState'
+import { UserState } from '../context/UserState'
 
 function MyApp({
   Component, pageProps: { session, ...pageProps },
@@ -25,37 +26,39 @@ function MyApp({
   return <>
     <SessionProvider session={ session }>
 
-      <SignedInState>
-        <ThemeState>
-          <ToastOptionsState>
-            <MakeToastState>
-              <UserInfoState>
+      <TopLoaderState>
+        <SignedInState>
+          <ThemeState>
+            <ToastOptionsState>
+              <MakeToastState>
                 <FiatCurrencyState>
                   <FiatCurrencySymState>
                     <NewsState setLoadingProgress={ setLoadingProgress }>
                       <CryptoSlugState setLoadingProgress={ setLoadingProgress }>
                         <CurrenciesState setLoadingProgress={ setLoadingProgress }>
-                          <Toaster />
-                          <LoadingBar
-                            progress={ loadingProgress }
-                            color='#6366f1'
-                            height={ 3 }
-                          />
-                          <TopBar />
-                          <Navbar />
-                          <Component { ...pageProps } />
-                          <div className='bg-gray-300 h-[1px] mb-10'></div>
-                          <Footer />
+                          <UserState>
+                            <Toaster />
+                            <LoadingBar
+                              progress={ loadingProgress }
+                              color='#6366f1'
+                              height={ 3 }
+                            />
+                            <TopBar />
+                            <Navbar />
+                            <Component { ...pageProps } />
+                            <div className='bg-gray-300 h-[1px] mb-10'></div>
+                            <Footer />
+                          </UserState>
                         </CurrenciesState>
                       </CryptoSlugState>
                     </NewsState>
                   </FiatCurrencySymState>
                 </FiatCurrencyState>
-              </UserInfoState>
-            </MakeToastState>
-          </ToastOptionsState>
-        </ThemeState>
-      </SignedInState>
+              </MakeToastState>
+            </ToastOptionsState>
+          </ThemeState>
+        </SignedInState>
+      </TopLoaderState>
 
     </SessionProvider>
   </>
