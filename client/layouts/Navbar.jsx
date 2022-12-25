@@ -94,6 +94,9 @@ const Navbar = () => {
 						<Link href={ '/' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
 							<li className={ `list-item text-center ${router.pathname === '/' && navStyles.activeNavlink}` }>Home</li>
 						</Link>
+						<Link href={ '/swap' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
+							<li className={ `list-item text-center ${router.pathname === '/aboutus' && navStyles.activeNavlink}` }>Swap</li>
+						</Link>
 						<Link href={ '/cryptos' } className="nav-link  hover:text-indigo-800" onClick={ () => { setNavCollapsed(true) } }>
 							<li className={ `list-item text-center ${(router.pathname === '/cryptos' || router.pathname === '/cryptocurrency/[cryptoSlug]') && navStyles.activeNavlink}` }>Cryptos</li>
 						</Link>

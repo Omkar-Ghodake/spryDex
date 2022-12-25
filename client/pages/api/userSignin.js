@@ -45,16 +45,12 @@ const handler = async (req, res) => {
           path: '/'
         }))
         .status(200)
-        .json({
-          success: true, message: 'Successfully Logged In!', user: {
-            id: payload._id, username: payload.username, email: payload.email, admin: payload.admin
-          }
-        })
+        .json({ success: true, message: 'Successfully Logged In!', payload })
     )
   } catch (error) {
     console.log('Following Error Occured in login\n', error)
     res.status(500).json({
-      success: false, error, message: 'Internal Server Error Occured!', loc: 'api'
+      success: false, error, message: 'An Internal Server Error Occured!', loc: 'api'
     })
   }
 }

@@ -42,8 +42,6 @@ const signin = () => {
 
 		const parsedRes = await response.json()
 
-		setUser(parsedRes.user)
-
 		if (parsedRes.success) {
 			swal(parsedRes.message, {
 				icon: 'success',

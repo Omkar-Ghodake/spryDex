@@ -5,8 +5,12 @@ const UserContext = createContext()
 const UserState = (props) => {
 	const [user, setUser] = useState({})
 
+	const getUser = async () => {
+
+	}
+
 	return (
-		<UserContext.Provider value={ { user, setUser } }>
+		<UserContext.Provider value={ { user, getUser } }>
 			{ props.children }
 		</UserContext.Provider>
 	)
